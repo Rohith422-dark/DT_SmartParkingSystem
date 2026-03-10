@@ -1,6 +1,6 @@
 ## Smart Parking System
 
-This is a browser-based **Smart Parking System** demo with three roles:
+This is a browser-based **Smart Parking System**  demo with three roles:
 
 - **User**: Books parking slots and receives an OTP.
 - **Security**: Uses the OTP to validate vehicle entry and exit.
