@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Smart Parking System</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <main class="container container--narrow">
+      <section id="loginView" class="card auth">
+        <h1>Smart Parking Access Portal</h1>
+        <p>Select your role to manage and monitor the parking facility.</p>
+        <form id="loginForm" class="auth__form">
+          <label>
+            Role
+            <select name="role" required>
+              <option value="" disabled selected>Choose an option</option>
+              <option value="user">User</option>
+              <option value="security">Security</option>
+              <option value="admin">Admin</option>
+            </select>
+          </label>
+          <label class="hidden" data-auth-field>
+            Username
+            <input
+              type="text"
+              name="username"
+              autocomplete="username"
+              placeholder="Enter username"
+            />
+          </label>
+          <label class="hidden" data-auth-field>
+            Password
+            <input
+              type="password"
+              name="password"
+              autocomplete="current-password"
+              placeholder="Enter password"
+            />
+          </label>
+          <p class="auth__hint" data-login-hint>No password needed for user bookings.</p>
+          <p class="auth__error" data-login-error></p>
+          <button class="btn btn--primary">Enter</button>
+        </form>
+      </section>
+
+      <section id="userView" class="card view">
+        <header class="view__header">
+          <div>
+            <h2>User Dashboard</h2>
+            <p class="hint">
+              Tap an available slot (green) to reserve it, choose your time, and receive an OTP.
+            </p>
+          </div>
+          <button class="btn btn--ghost" data-action="logout">Log out</button>
+        </header>
+
+        <div class="grid grid--two grid--user">
+          <article class="pane">
+            <h3>Parking Availability</h3>
+            <div class="legend">
+              <span class="legend__item status--available">Available</span>
+              <span class="legend__item status--booked">Booked</span>
+              <span class="legend__item status--occupied">Occupied</span>
+              <span class="legend__item status--expired">Expired</span>
+            </div>
+            <div id="userSlotGrid" class="slot-grid slot-grid--interactive"></div>
+          </article>
+
+          <form id="userBookingForm" class="pane">
+            <h3>Reserve Slot</h3>
+            <div class="selected-slot">
+              <span>Selected slot:</span>
+              <strong data-selected-slot>None</strong>
+            </div>
+            <input type="hidden" name="slotId" required />
+            <label>
+              Parking date
+              <input type="date" name="startDate" required />
+            </label>
+            <label>
+              Start time
+              <input type="time" name="startTime" required />
+            </label>
+            <label>
+              Full name
+              <input type="text" name="fullName" placeholder="Alex Johnson" required />
+            </label>
+            <label>
+              Phone number
+              <input type="tel" name="phone" placeholder="+1 555 000 0000" required />
+            </label>
+            <label>
+              Vehicle number plate
+              <input type="text" name="plate" placeholder="ABC-1234" required />
+            </label>
+            <button class="btn btn--primary">Book Slot</button>
+            <p class="hint">
+              You will receive a 6-digit OTP. Arrive within 15 minutes of the booked time or
+              the slot will be released automatically.
+            </p>
+          </form>
+        </div>
+
+        <article id="bookingSummary" class="pane hidden">
+          <h3>Booking Confirmed</h3>
+          <div class="summary-content">
+            <p><strong>Slot:</strong> <span data-field="slot"></span></p>
+            <p><strong>Start:</strong> <span data-field="start"></span></p>
+            <p><strong>Name:</strong> <span data-field="name"></span></p>
+            <p><strong>Vehicle:</strong> <span data-field="plate"></span></p>
+            <p><strong>OTP:</strong> <span data-field="otp" class="otp"></span></p>
+            <p>
+              <strong>Grace until:</strong>
+              <span data-field="grace"></span>
+            </p>
+          </div>
+          <button class="btn btn--ghost" data-action="copy-otp">
+            Copy OTP
+          </button>
+        </article>
+      </section>
+
+      <section id="securityView" class="card view">
+        <header class="view__header">
+          <div>
+            <h2>Security Console</h2>
+            <p class="hint">
+              Validate check-ins and check-outs with the OTP provided to the user.
+            </p>
+          </div>
+          <button class="btn btn--ghost" data-action="logout">Log out</button>
+        </header>
+
+        <div class="grid grid--two">
+          <form id="securityCheckInForm" class="pane">
+            <h3>Check-in (Entry)</h3>
+            <label>
+              OTP
+              <input type="text" name="otp" maxlength="6" inputmode="numeric" required />
+            </label>
+            <label>
+              Scanner ID
+              <input type="text" name="scannerId" placeholder="ENTRY-01" required />
+            </label>
+            <button class="btn btn--primary">Confirm Entry</button>
+          </form>
+
+          <form id="securityCheckOutForm" class="pane">
+            <h3>Check-out (Exit)</h3>
+            <label>
+              OTP
+              <input type="text" name="otp" maxlength="6" inputmode="numeric" required />
+            </label>
+            <button class="btn btn--primary">Confirm Exit</button>
+          </form>
+        </div>
+
+        <article class="pane pane--log">
+          <h3>Activity Feed</h3>
+          <ul id="eventLog"></ul>
+        </article>
+      </section>
+
+      <section id="adminView" class="card view">
+        <header class="view__header">
+          <div>
+            <h2>Admin Control</h2>
+            <p class="hint">
+              Monitor all parking activity and add new slots as the facility expands.
+            </p>
+          </div>
+          <button class="btn btn--ghost" data-action="logout">Log out</button>
+        </header>
+
+        <div class="grid grid--two">
+          <article class="pane">
+            <h3>Slot Overview</h3>
+            <div class="legend">
+              <span class="legend__item status--available">Available</span>
+              <span class="legend__item status--booked">Booked</span>
+              <span class="legend__item status--occupied">Occupied</span>
+              <span class="legend__item status--expired">Expired</span>
+            </div>
+            <div id="adminSlotGrid" class="slot-grid"></div>
+          </article>
+
+          <form id="addSlotForm" class="pane">
+            <h3>Add Parking Slot</h3>
+            <label>
+              Slot label
+              <input type="text" name="slotId" placeholder="E1" required />
+            </label>
+            <button class="btn btn--primary">Add Slot</button>
+            <p class="hint">
+              New slots appear in both the user and admin views immediately.
+            </p>
+          </form>
+        </div>
+
+        <article class="pane">
+          <h3>Bookings Monitor</h3>
+          <div id="adminBookingTable" class="table"></div>
+        </article>
+      </section>
+    </main>
+
+    <template id="bookingRowTemplate">
+      <div class="table__row">
+        <div data-field="id"></div>
+        <div data-field="slot"></div>
+        <div data-field="status"></div>
+        <div data-field="otp"></div>
+        <div data-field="grace"></div>
+        <div data-field="entry"></div>
+      </div>
+    </template>
+
+    <script src="app.js" type="module"></script>
+  </body>
+</html>
+
+
